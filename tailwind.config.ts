@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,11 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				neon: {
+					green: "#39FF14",
+					darkGreen: "#0D2818",
+					lightGreen: "#7CFC00"
 				}
 			},
 			borderRadius: {
@@ -84,11 +90,28 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-neon': {
+					'0%, 100%': { 
+						boxShadow: '0 0 7px #39FF14, 0 0 10px #39FF14, 0 0 21px #39FF14'
+					},
+					'50%': { 
+						boxShadow: '0 0 5px #39FF14, 0 0 7px #39FF14, 0 0 14px #39FF14'
+					}
+				},
+				'glow': {
+					'0%, 100%': { opacity: 1 },
+					'50%': { opacity: 0.7 }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-neon': 'pulse-neon 2s infinite',
+				'glow': 'glow 2s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'grid-pattern': "radial-gradient(#39ff1420 1px, transparent 1px)",
 			}
 		}
 	},
