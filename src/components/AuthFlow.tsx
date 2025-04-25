@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 
 // Documentation Component
-const AutomataDocumentation = () => (
+export const AutomataDocumentation = () => (
   <div className="w-full bg-card rounded-lg p-6 border border-neon-green/20 mb-8">
     <h2 className="text-xl font-bold text-neon-green mb-4">Documentação dos Autômatos</h2>
     
@@ -232,7 +231,7 @@ export const NFAVisualization = () => {
       
       <div className="flex items-center justify-center mb-8">
         <div className="code-text">
-          Estados atuais: {currentStates.join(', ')}
+          Estados atuais: <span className="text-neon-green">{currentStates.join(', ')}</span>
         </div>
       </div>
       
@@ -268,25 +267,24 @@ export const NFAVisualization = () => {
         
         {/* SVG paths with transition labels */}
         <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
-          <path d="M80,40 L160,40" className="automaton-edge" fill="none" />
+          <path d="M80,40 L160,40" className="automaton-edge stroke-neon-green" fill="none" />
           <text x="120" y="30" className="text-xs text-neon-green">accessForm</text>
           
-          <path d="M220,40 L300,40" className="automaton-edge" fill="none" />
-          <text x="260" y="30" className="text-xs text-neon-green">submitCredentials</text>
+          <path d="M220,40 L300,40" className="automaton-edge stroke-neon-green" fill="none" />
+          <text x="260" y="30" className="text-xs text-neon-green">credentials</text>
           
           {/* Multiple paths from Q2 */}
-          <path d="M340,70 L80,150" className="automaton-edge" fill="none" />
-          <path d="M340,70 L220,150" className="automaton-edge" fill="none" />
-          <path d="M340,70 L340,150" className="automaton-edge" fill="none" />
-          <text x="240" y="90" className="text-xs text-neon-green">credentials</text>
+          <path d="M340,70 L80,150" className="automaton-edge stroke-neon-green" fill="none" />
+          <path d="M340,70 L220,150" className="automaton-edge stroke-neon-green" fill="none" />
+          <path d="M340,70 L340,150" className="automaton-edge stroke-neon-green" fill="none" />
           
-          <path d="M80,180 L340,180" className="automaton-edge" fill="none" />
+          <path d="M80,180 L340,180" className="automaton-edge stroke-neon-green" fill="none" />
           <text x="200" y="170" className="text-xs text-neon-green">secondFactor</text>
           
-          <path d="M380,180 L420,180" className="automaton-edge" fill="none" />
+          <path d="M380,180 L420,180" className="automaton-edge stroke-neon-green" fill="none" />
           <text x="400" y="170" className="text-xs text-neon-green">accessResource</text>
           
-          <path d="M160,150 L160,70" className="automaton-edge" fill="none" />
+          <path d="M160,150 L160,70" className="automaton-edge stroke-neon-green" fill="none" />
           <text x="130" y="110" className="text-xs text-neon-green">retryLogin</text>
         </svg>
       </div>
