@@ -1,36 +1,66 @@
 
 import React, { useState, useEffect } from 'react';
 
-// DFA component - Deterministic Finite Automaton visualization
+// Documentation Component
+const AutomataDocumentation = () => (
+  <div className="w-full bg-card rounded-lg p-6 border border-neon-green/20 mb-8">
+    <h2 className="text-xl font-bold text-neon-green mb-4">Documentação dos Autômatos</h2>
+    
+    <div className="space-y-4 text-left">
+      <section>
+        <h3 className="text-lg font-semibold text-neon-green mb-2">Autômato Finito Determinístico (AFD)</h3>
+        <p className="text-sm text-muted-foreground">
+          O AFD modela o fluxo de autenticação com transições determinísticas onde:
+        </p>
+        <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
+          <li>Q0: Estado inicial (não autenticado)</li>
+          <li>Q1: Formulário de acesso exibido</li>
+          <li>Q2: Validação de credenciais</li>
+          <li>Q3: Estado de erro (credenciais inválidas)</li>
+          <li>Q4: Autenticado com sucesso</li>
+          <li>Q5: Acesso concedido aos recursos (estado final)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="text-lg font-semibold text-neon-green mb-2">Autômato Finito Não-Determinístico (AFN)</h3>
+        <p className="text-sm text-muted-foreground">
+          O AFN representa múltiplos caminhos possíveis durante a autenticação:
+        </p>
+        <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
+          <li>Q0: Estado inicial (não autenticado)</li>
+          <li>Q1: Formulário de acesso exibido</li>
+          <li>Q2: Validação de credenciais</li>
+          <li>Q3: Autenticação fraca (requer 2FA)</li>
+          <li>Q4: Estado de erro</li>
+          <li>Q5: Autenticado com sucesso</li>
+          <li>Q6: Acesso concedido aos recursos (estado final)</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+);
+
+// DFA component with traditional state notation
 export const DFAVisualization = () => {
-  const [currentState, setCurrentState] = useState('start');
+  const [currentState, setCurrentState] = useState('Q0');
   const [input, setInput] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
   
-  // DFA transition function
+  // Updated DFA transition function with Q-notation
   const transition = (state: string, inputSymbol: string): string => {
     switch (state) {
-      case 'start':
-        return inputSymbol === 'accessForm' ? 'showingForm' : 'start';
-      case 'showingForm':
-        return inputSymbol === 'submitCredentials' ? 'validating' : 'showingForm';
-      case 'validating':
-        return inputSymbol === 'validCredentials' ? 'authenticated' : 
-               inputSymbol === 'invalidCredentials' ? 'error' : 'validating';
-      case 'error':
-        return inputSymbol === 'retryLogin' ? 'showingForm' : 'error';
-      case 'authenticated':
-        return inputSymbol === 'accessResource' ? 'accessGranted' : 
-               inputSymbol === 'logout' ? 'start' : 'authenticated';
-      case 'accessGranted':
-        return inputSymbol === 'logout' ? 'start' : 'accessGranted';
-      default:
-        return state;
+      case 'Q0': return inputSymbol === 'accessForm' ? 'Q1' : 'Q0';
+      case 'Q1': return inputSymbol === 'submitCredentials' ? 'Q2' : 'Q1';
+      case 'Q2': return inputSymbol === 'validCredentials' ? 'Q4' : 
+                        inputSymbol === 'invalidCredentials' ? 'Q3' : 'Q2';
+      case 'Q3': return inputSymbol === 'retryLogin' ? 'Q1' : 'Q3';
+      case 'Q4': return inputSymbol === 'accessResource' ? 'Q5' : 'Q4';
+      case 'Q5': return inputSymbol === 'logout' ? 'Q0' : 'Q5';
+      default: return state;
     }
   };
   
-  // Simulate a login flow
   useEffect(() => {
     const simulatedInputs = [
       'accessForm',
@@ -46,11 +76,9 @@ export const DFAVisualization = () => {
         if (prev < simulatedInputs.length) {
           setCurrentState(state => transition(state, simulatedInputs[prev]));
           return prev + 1;
-        } else {
-          clearInterval(timer);
-          setIsComplete(true);
-          return prev;
         }
+        clearInterval(timer);
+        return prev;
       });
     }, 2000);
     
@@ -59,9 +87,9 @@ export const DFAVisualization = () => {
   
   return (
     <div className="w-full bg-card rounded-lg p-6 border border-neon-green/20">
-      <h3 className="text-xl font-bold text-neon-green mb-4 text-center">Modelo Determinístico (AFD)</h3>
-      <p className="text-sm text-muted-foreground mb-6 text-center">
-        Cada estado tem uma única transição possível para cada entrada
+      <h2 className="text-xl font-bold text-neon-green mb-4">Autômato Finito Determinístico (AFD)</h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Transições determinísticas no processo de autenticação
       </p>
       
       <div className="flex items-center justify-center mb-8">
@@ -71,58 +99,51 @@ export const DFAVisualization = () => {
       </div>
       
       <div className="relative h-64 overflow-hidden">
-        {/* State nodes */}
-        <div className={`automaton-node ${currentState === 'start' ? 'active' : ''} ${currentState === 'start' ? 'initial' : ''} absolute top-10 left-10`}>
-          Start
+        {/* State nodes with Q-notation */}
+        <div className={`automaton-node ${currentState === 'Q0' ? 'active' : ''} initial absolute top-10 left-10`}>
+          Q0
         </div>
         
-        <div className={`automaton-node ${currentState === 'showingForm' ? 'active' : ''} absolute top-10 left-1/3`}>
-          Form
+        <div className={`automaton-node ${currentState === 'Q1' ? 'active' : ''} absolute top-10 left-1/3`}>
+          Q1
         </div>
         
-        <div className={`automaton-node ${currentState === 'validating' ? 'active' : ''} absolute top-10 left-2/3`}>
-          Validating
+        <div className={`automaton-node ${currentState === 'Q2' ? 'active' : ''} absolute top-10 left-2/3`}>
+          Q2
         </div>
         
-        <div className={`automaton-node ${currentState === 'error' ? 'active' : ''} absolute bottom-10 left-1/3`}>
-          Error
+        <div className={`automaton-node ${currentState === 'Q3' ? 'active' : ''} absolute bottom-10 left-1/3`}>
+          Q3
         </div>
         
-        <div className={`automaton-node ${currentState === 'authenticated' ? 'active' : ''} absolute bottom-10 left-2/3`}>
-          Auth
+        <div className={`automaton-node ${currentState === 'Q4' ? 'active' : ''} absolute bottom-10 left-2/3`}>
+          Q4
         </div>
         
-        <div className={`automaton-node ${currentState === 'accessGranted' ? 'active' : ''} final absolute bottom-10 right-10`}>
-          Access
+        <div className={`automaton-node ${currentState === 'Q5' ? 'active' : ''} final absolute bottom-10 right-10`}>
+          Q5
         </div>
         
-        {/* Connecting lines would be SVG paths in a real implementation */}
+        {/* SVG paths with transition labels */}
         <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
-          {/* Start to Form */}
           <path d="M80,40 L160,40" className="automaton-edge" fill="none" />
           <text x="120" y="30" className="text-xs text-neon-green">accessForm</text>
           
-          {/* Form to Validating */}
           <path d="M220,40 L300,40" className="automaton-edge" fill="none" />
           <text x="260" y="30" className="text-xs text-neon-green">submitCredentials</text>
           
-          {/* Validating to Auth */}
           <path d="M340,70 L340,150" className="automaton-edge" fill="none" />
           <text x="350" y="110" className="text-xs text-neon-green">validCredentials</text>
           
-          {/* Validating to Error */}
           <path d="M300,70 L220,150" className="automaton-edge" fill="none" />
           <text x="240" y="110" className="text-xs text-neon-green">invalidCredentials</text>
           
-          {/* Error to Form */}
           <path d="M160,150 L160,70" className="automaton-edge" fill="none" />
           <text x="130" y="110" className="text-xs text-neon-green">retryLogin</text>
           
-          {/* Auth to Access */}
           <path d="M380,180 L420,180" className="automaton-edge" fill="none" />
           <text x="400" y="170" className="text-xs text-neon-green">accessResource</text>
           
-          {/* Auth/Access to Start (logout) */}
           <path d="M40,180 C40,180 40,40 40,40" className="automaton-edge" fill="none" />
           <text x="10" y="110" className="text-xs text-neon-green">logout</text>
         </svg>
@@ -145,54 +166,27 @@ export const DFAVisualization = () => {
   );
 };
 
-// NFA component - Non-deterministic Finite Automaton visualization
+// NFA component with traditional state notation
 export const NFAVisualization = () => {
-  const [currentStates, setCurrentStates] = useState<string[]>(['start']);
+  const [currentStates, setCurrentStates] = useState<string[]>(['Q0']);
   const [input, setInput] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
   
-  // NFA transition function - can return multiple possible states
+  // Updated NFA transition function with Q-notation
   const transition = (state: string, inputSymbol: string): string[] => {
     switch (state) {
-      case 'start':
-        return inputSymbol === 'accessForm' ? ['showingForm'] : [];
-      case 'showingForm':
-        return inputSymbol === 'submitCredentials' ? ['validating'] : [];
-      case 'validating':
-        return inputSymbol === 'credentials' ? ['authenticated', 'weakAuth', 'error'] : [];
-      case 'weakAuth':
-        return inputSymbol === 'secondFactor' ? ['authenticated'] : 
-               inputSymbol === 'timeout' ? ['error'] : [];
-      case 'error':
-        return inputSymbol === 'retryLogin' ? ['showingForm'] : [];
-      case 'authenticated':
-        return inputSymbol === 'accessResource' ? ['accessGranted'] : 
-               inputSymbol === 'logout' ? ['start'] : [];
-      case 'accessGranted':
-        return inputSymbol === 'logout' ? ['start'] : [];
-      default:
-        return [];
+      case 'Q0': return inputSymbol === 'accessForm' ? ['Q1'] : [];
+      case 'Q1': return inputSymbol === 'submitCredentials' ? ['Q2'] : [];
+      case 'Q2': return inputSymbol === 'credentials' ? ['Q3', 'Q4', 'Q5'] : [];
+      case 'Q3': return inputSymbol === 'secondFactor' ? ['Q5'] : 
+                        inputSymbol === 'timeout' ? ['Q4'] : [];
+      case 'Q4': return inputSymbol === 'retryLogin' ? ['Q1'] : [];
+      case 'Q5': return inputSymbol === 'accessResource' ? ['Q6'] : [];
+      case 'Q6': return inputSymbol === 'logout' ? ['Q0'] : [];
+      default: return [];
     }
   };
   
-  // Process the entire NFA for the current input
-  const processNFA = (states: string[], inputSymbol: string): string[] => {
-    let nextStates: string[] = [];
-    
-    states.forEach(state => {
-      const transitions = transition(state, inputSymbol);
-      transitions.forEach(newState => {
-        if (!nextStates.includes(newState)) {
-          nextStates.push(newState);
-        }
-      });
-    });
-    
-    return nextStates;
-  };
-  
-  // Simulate a login flow with multiple possibilities
   useEffect(() => {
     const simulatedInputs = [
       'accessForm',
@@ -207,98 +201,93 @@ export const NFAVisualization = () => {
     const timer = setInterval(() => {
       setCurrentStep(prev => {
         if (prev < simulatedInputs.length) {
-          setCurrentStates(states => processNFA(states, simulatedInputs[prev]));
+          setCurrentStates(states => {
+            const nextStates: string[] = [];
+            states.forEach(state => {
+              const transitions = transition(state, simulatedInputs[prev]);
+              transitions.forEach(newState => {
+                if (!nextStates.includes(newState)) {
+                  nextStates.push(newState);
+                }
+              });
+            });
+            return nextStates;
+          });
           return prev + 1;
-        } else {
-          clearInterval(timer);
-          setIsComplete(true);
-          return prev;
         }
+        clearInterval(timer);
+        return prev;
       });
     }, 2000);
     
     return () => clearInterval(timer);
   }, []);
-  
+
   return (
     <div className="w-full bg-card rounded-lg p-6 border border-neon-green/20">
-      <h3 className="text-xl font-bold text-neon-green mb-4 text-center">Modelo Não-Determinístico (AFN)</h3>
-      <p className="text-sm text-muted-foreground mb-6 text-center">
-        Uma entrada pode levar a múltiplos estados possíveis
+      <h2 className="text-xl font-bold text-neon-green mb-4">Autômato Finito Não-Determinístico (AFN)</h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Transições não-determinísticas com múltiplos caminhos possíveis
       </p>
       
       <div className="flex items-center justify-center mb-8">
         <div className="code-text">
-          Estados atuais: {currentStates.map((state, index) => (
-            <span key={index} className="text-neon-green">{state}{index < currentStates.length - 1 ? ', ' : ''}</span>
-          ))}
+          Estados atuais: {currentStates.join(', ')}
         </div>
       </div>
       
       <div className="relative h-64 overflow-hidden">
-        {/* State nodes */}
-        <div className={`automaton-node ${currentStates.includes('start') ? 'active' : ''} initial absolute top-10 left-10`}>
-          Start
+        {/* State nodes with Q-notation */}
+        <div className={`automaton-node ${currentStates.includes('Q0') ? 'active' : ''} initial absolute top-10 left-10`}>
+          Q0
         </div>
         
-        <div className={`automaton-node ${currentStates.includes('showingForm') ? 'active' : ''} absolute top-10 left-1/3`}>
-          Form
+        <div className={`automaton-node ${currentStates.includes('Q1') ? 'active' : ''} absolute top-10 left-1/3`}>
+          Q1
         </div>
         
-        <div className={`automaton-node ${currentStates.includes('validating') ? 'active' : ''} absolute top-10 right-1/3`}>
-          Validating
+        <div className={`automaton-node ${currentStates.includes('Q2') ? 'active' : ''} absolute top-10 right-1/3`}>
+          Q2
         </div>
         
-        <div className={`automaton-node ${currentStates.includes('error') ? 'active' : ''} absolute bottom-10 left-10`}>
-          Error
+        <div className={`automaton-node ${currentStates.includes('Q3') ? 'active' : ''} absolute bottom-10 left-10`}>
+          Q3
         </div>
         
-        <div className={`automaton-node ${currentStates.includes('weakAuth') ? 'active' : ''} absolute bottom-10 left-1/3`}>
-          Weak Auth
+        <div className={`automaton-node ${currentStates.includes('Q4') ? 'active' : ''} absolute bottom-10 left-1/3`}>
+          Q4
         </div>
         
-        <div className={`automaton-node ${currentStates.includes('authenticated') ? 'active' : ''} absolute bottom-10 right-1/3`}>
-          Auth
+        <div className={`automaton-node ${currentStates.includes('Q5') ? 'active' : ''} absolute bottom-10 right-1/3`}>
+          Q5
         </div>
         
-        <div className={`automaton-node ${currentStates.includes('accessGranted') ? 'active' : ''} final absolute bottom-10 right-10`}>
-          Access
+        <div className={`automaton-node ${currentStates.includes('Q6') ? 'active' : ''} final absolute bottom-10 right-10`}>
+          Q6
         </div>
         
-        {/* Connecting lines would be SVG paths in a real implementation */}
+        {/* SVG paths with transition labels */}
         <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
-          {/* Start to Form */}
           <path d="M80,40 L160,40" className="automaton-edge" fill="none" />
           <text x="120" y="30" className="text-xs text-neon-green">accessForm</text>
           
-          {/* Form to Validating */}
           <path d="M220,40 L300,40" className="automaton-edge" fill="none" />
           <text x="260" y="30" className="text-xs text-neon-green">submitCredentials</text>
           
-          {/* Validating to multiple states */}
-          <path d="M330,70 L330,150" className="automaton-edge" fill="none" />
-          <path d="M300,70 L200,150" className="automaton-edge" fill="none" />
-          <path d="M270,70 L80,150" className="automaton-edge" fill="none" />
+          {/* Multiple paths from Q2 */}
+          <path d="M340,70 L80,150" className="automaton-edge" fill="none" />
+          <path d="M340,70 L220,150" className="automaton-edge" fill="none" />
+          <path d="M340,70 L340,150" className="automaton-edge" fill="none" />
           <text x="240" y="90" className="text-xs text-neon-green">credentials</text>
           
-          {/* Weak Auth to Auth or Error */}
-          <path d="M200,180 L300,180" className="automaton-edge" fill="none" />
-          <text x="240" y="170" className="text-xs text-neon-green">secondFactor</text>
+          <path d="M80,180 L340,180" className="automaton-edge" fill="none" />
+          <text x="200" y="170" className="text-xs text-neon-green">secondFactor</text>
           
-          <path d="M160,180 L80,180" className="automaton-edge" fill="none" />
-          <text x="120" y="170" className="text-xs text-neon-green">timeout</text>
-          
-          {/* Auth to Access */}
           <path d="M380,180 L420,180" className="automaton-edge" fill="none" />
           <text x="400" y="170" className="text-xs text-neon-green">accessResource</text>
           
-          {/* Error to Form */}
-          <path d="M80,150 L160,70" className="automaton-edge" fill="none" />
-          <text x="100" y="110" className="text-xs text-neon-green">retryLogin</text>
-          
-          {/* Logout paths */}
-          <path d="M400,150 C300,100 100,100 40,40" className="automaton-edge" fill="none" />
-          <text x="200" y="90" className="text-xs text-neon-green">logout</text>
+          <path d="M160,150 L160,70" className="automaton-edge" fill="none" />
+          <text x="130" y="110" className="text-xs text-neon-green">retryLogin</text>
         </svg>
       </div>
       
